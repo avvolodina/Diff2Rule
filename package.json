@@ -1,0 +1,51 @@
+{
+  "name": "diff2rule",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.2.1",
+    "@mui/material": "^6.2.1",
+    "@mui/material-nextjs": "^6.2.1",
+    "@mui/x-date-pickers": "^7.23.2",
+    "@toolpad/core": "^0.11.0",
+    "ag-grid-community": "^33.0.2",
+    "ag-grid-react": "^33.0.2",
+    "chart.js": "^4.4.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.7",
+    "express-winston": "^4.2.0",
+    "lodash-es": "^4.17.21",
+    "luxon": "^3.5.0",
+    "morgan": "^1.10.0",
+    "next": "15.1.1-canary.4",
+    "pg-promise": "^11.10.2",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
+    "split.js": "^1.6.5",
+    "sqlstring": "^2.3.3",
+    "tmp": "^0.2.3",
+    "uniqid": "^5.4.0",
+    "uuid": "^11.0.3",
+    "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "15.1.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17"
+  }
+}

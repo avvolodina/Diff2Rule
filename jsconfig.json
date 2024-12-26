@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"],
+      "@api/*": ["./app/api/*"],
+      "@components/*": ["./components/*"],
+      "@handlers/*": ["./modules/handlers/*"],
+      "@modules/*": ["./modules/*"]
+    }
+  }
+}

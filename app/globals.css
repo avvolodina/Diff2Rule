@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: rgb(243 244 246);
+  --foreground: #171717;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Remove the Next.js debug element that breaks the layout */
+nextjs-portal {
+  display: none;
+}
+
+.ag-theme-alpine {
+  --ag-spacing: 2px;
+}
