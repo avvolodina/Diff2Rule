@@ -1,7 +1,14 @@
 'use client';
 import React, { useEffect, useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
-import { renderHeader, renderSubheader, renderSnapshotInfoAndStats, getRowId, defaultColDef, formatFieldsSubcell } from './diff-common';
+import {
+  renderHeader,
+  renderSubheader,
+  renderSnapshotInfoAndStats,
+  getRowId,
+  defaultColDef,
+  formatFieldsSubcell,
+} from './diff-common';
 import { cx } from 'class-variance-authority';
 
 /**
@@ -86,6 +93,7 @@ export function GenericDiffList(props) {
                     className={cx('grid grid-cols-[minmax(4em,1fr)_4em] gap-1', shouldExpand && 'hover:text-blue-600')}
                   >
                     <span className="max-w-min">
+                      {fieldNames.length > 1 &&`[${fieldNames.length}] `}
                       {shouldExpand && <>{formatFieldsSubcell(fieldNames[0])}:&emsp;</>}
                       {formatFieldsSubcell(keys[fieldNames[0]])}
                     </span>
@@ -143,6 +151,7 @@ export function GenericDiffList(props) {
                     className={cx('grid grid-cols-[minmax(4em,1fr)_4em] gap-1', shouldExpand && 'hover:text-blue-600')}
                   >
                     <span className="max-w-min">
+                      {`[${fieldNames.length}] `}
                       {formatFieldsSubcell(fieldNames[0])}
                       {':'}&emsp;
                       {formatFieldsSubcell(fields[fieldNames[0]]?.valueA)}

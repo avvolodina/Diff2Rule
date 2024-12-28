@@ -11,6 +11,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './muiTheme';
 import { usePathname } from 'next/navigation';
 import { cx } from 'class-variance-authority';
+import packageJson from '../package.json' with { type: 'json' };
 
 // AG Grid settings
 import {
@@ -139,7 +140,15 @@ export default function RootLayout({ children }) {
                   </div>
                   <nav className="flex-grow">{renderMenu(menuData, isSidebarOpen)}</nav>
                   <footer className="mt-auto text-center text-gray-400 text-sm">
-                    {isSidebarOpen ? 'Diff2Rule. Anna Volodina, 2024' : 'D2R'}
+                    {isSidebarOpen ? (
+                      <>
+                        Diff2Rule v{packageJson.xversion}
+                        <br />
+                        Anna Volodina, 2024
+                      </>
+                    ) : (
+                      <>D2R<br/>{packageJson.xversion}</>
+                    )}
                   </footer>
                 </aside>
               )}

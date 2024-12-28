@@ -56,21 +56,27 @@ export async function getRsHandlerFunction(handlerPath) {
   return getHandlerFunction('rule-set', handlerPath);
 }
 
-// Map: Exclusively SQL Server Type -> PostgreSQL Type
+// Map: Native SQL Server Type -> PostgreSQL Type (only name differences mapped)
 const mssqlPgDataTypeMap = {
-  tinyint: 'smallint',
-  float: 'double precision',
-  numerical: 'decimal',
+  //sort these by name
+  bigint: 'bigint',
+  binary: 'bytea',
+  bit: 'bool',
+  char: 'char',
   datetime: 'timestamp',
   datetime2: 'timestamp',
-  smalldatetime: 'timestamp',
   datetimeoffset: 'timestamptz',
-  binary: 'bytea',
-  varbinary: 'bytea',
+  float: 'double precision',
   image: 'bytea',
+  int: 'integer',
+  nchar: 'char',
+  ntext: 'text',
+  nvarchar: 'varchar',
+  smalldatetime: 'timestamp',
+  smallmoney: 'money',
+  tinyint: 'smallint',
   uniqueidentifier: 'uuid',
-  bit: 'bool',
-  xml: 'xml',
+  varbinary: 'bytea',
 };
 
 /**

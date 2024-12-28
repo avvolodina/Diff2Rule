@@ -17,6 +17,9 @@ export default function StatusCellRenderer(params) {
     case 'Created':
       icon = '<span class="text-lg align-baseline text-blue-600">&#10041;</span>'; // TWELVE POINTED BLACK STAR
       break;
+    case 'Queued':
+      icon = '&#8987;'; // HOURGLASS EMOJI
+      break;
     case 'Processing':
     case 'Executing':
       icon = '&#9193;'; // BLACK RIGHT-POINTING DOUBLE TRIANGLE

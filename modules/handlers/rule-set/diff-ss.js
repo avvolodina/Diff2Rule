@@ -24,10 +24,11 @@ import {
  */
 export async function diffSsAsList(params) {
   const keyFields = checkGetFieldList(params, 'keyFieldList');
+  const excludeFields = checkGetFieldList(params, 'excludeFieldList', false);
   const ssOld = await checkGetSnapshotRecset(params, 'ssIdOld');
   const ssNew = await checkGetSnapshotRecset(params, 'ssIdNew');
 
-  const result = getRecsetDiffList(ssOld, ssNew, keyFields, ['snapshot_id']);
+  const result = getRecsetDiffList(ssOld, ssNew, keyFields, ['snapshot_id', ...excludeFields]);
 
   doGenericResultRenamesList(result);
   return result;
@@ -51,10 +52,11 @@ export async function diffSsAsList(params) {
  */
 export async function diffSsAsTable(params) {
   const keyFields = checkGetFieldList(params, 'keyFieldList');
+  const excludeFields = checkGetFieldList(params, 'excludeFieldList', false);
   const ssOld = await checkGetSnapshotRecset(params, 'ssIdOld');
   const ssNew = await checkGetSnapshotRecset(params, 'ssIdNew');
 
-  const result = getRecsetDiffTable(ssOld, ssNew, keyFields, ['snapshot_id']);
+  const result = getRecsetDiffTable(ssOld, ssNew, keyFields, ['snapshot_id', ...excludeFields]);
 
   doGenericResultRenamesTable(result);
   return result;

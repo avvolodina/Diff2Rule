@@ -5,20 +5,22 @@ import { snapshotFetchAll, snapshotCreate, snapshotDelete, snapshotUpdate } from
 import { targetQueryFetchAllSelect } from '@api/ui/target-queries/basic';
 import { useSnackbar } from '@components/SnackbarContext';
 import { useDialogs } from '@toolpad/core/useDialogs';
-import { Button, Stack, IconButton } from '@mui/material';
+import { Button, Stack, IconButton, Menu, MenuItem, ButtonGroup } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { DateTime } from 'luxon';
-import { formatDateIso } from '@modules/utils';
+import { formatDateIso, formatDateIsoShort } from '@modules/utils';
 import StatusCellRenderer from '@components/StatusCellRenderer';
 import LinebreaksToBrCellRenderer from '@components/LinebreaksToBrCellRenderer';
+import CreateTemporalBatchDialog from '@components/CreateTemporalBatchDialog';
 
 /**
  * Main component for the Snapshots page.
  * Displays a grid of snapshots and provides functionality to manage them.
  */
 export default function SnapshotsPage() {
-  const { showSuccess, showWarning, showError } = useSnackbar();
+  const { showSuccess, showWarning, showError, showInfo } = useSnackbar();
   const dialogs = useDialogs();
   const gridRef = useRef(null);
   const gridApi = gridRef?.current?.api;
@@ -30,6 +32,11 @@ export default function SnapshotsPage() {
       headerName: 'Target Query',
       editable: true,
       cellEditor: 'agSelectCellEditor',
+    },
+    {
+      field: 't_arg',
+      headerName: 'T Argument',
+      editable: false,
     },
     {
       field: 'notes',
@@ -93,6 +100,9 @@ export default function SnapshotsPage() {
   const [isDeleteEnabled, setIsDeleteEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [tqMap, setTqMap] = useState({});
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [isTemporalBatchDialogOpen, setIsTemporalBatchDialogOpen] = useState(false);
+  const isNewBtnMenuOpen = Boolean(anchorEl);
 
   /**
    * Initially fetches all snapshots from the database.
@@ -187,9 +197,16 @@ export default function SnapshotsPage() {
    * Handles the "New" button click.
    * Creates a new snapshot with empty values, adds it to the grid, and enters edit mode.
    */
-  const handleNew = useCallback(async () => {
+  const onNewBtnClick = useCallback(async () => {
     try {
-      const newData = { tq_id: null, label: null, notes: null, complete_ts: null, status: 'Created' };
+      const newData = {
+        tq_id: null,
+        label: null,
+        notes: null,
+        t_arg: formatDateIsoShort(new Date()),
+        complete_ts: null,
+        status: 'Created',
+      };
       const newId = await snapshotCreate(newData);
       showSuccess('New snapshot created successfully');
 
@@ -211,10 +228,66 @@ export default function SnapshotsPage() {
   }, [rowData, gridApi, showError]);
 
   /**
+   * Handles the "Temporal Batch" menu item click.
+   */
+  const onTemporalBatchBtnClick = useCallback(() => {
+    setIsTemporalBatchDialogOpen(true);
+    onNewBtnMenuClose();
+  }, []);
+
+  /**
+   * Handles closing the temporal batch dialog.
+   */
+  const handleTemporalBatchDialogClose = useCallback(() => {
+    setIsTemporalBatchDialogOpen(false);
+  }, []);
+
+  /**
+   * Handles the creation of a temporal batch of snapshots.
+   * @param {Object} params - The parameters for creating the temporal batch.
+   * @param {string} params.tqId - The ID of the target query.
+   * @param {string} params.labelTemplate - The template for the snapshot label.
+   * @param {string} params.notesTemplate - The template for the snapshot notes.
+   * @param {Array<string>} params.dates - The array of dates for which to create snapshots.
+   */
+  const handleCreateTemporalBatch = useCallback(
+    async ({ tqId, tqName, labelTemplate, notesTemplate, dates }) => {
+      try {
+        for (const date of dates) {
+          const newLabel = labelTemplate.replace('{tq}', tqName).replace('{date}', date);
+          const newNotes = notesTemplate.replace('{tq}', tqName).replace('{date}', date);
+          const newData = {
+            tq_id: tqId,
+            label: newLabel,
+            notes: newNotes,
+            t_arg: date,
+            complete_ts: null,
+            status: 'Created',
+          };
+          const newId = await snapshotCreate(newData);
+          const newRow = { ...newData, id: newId };
+          gridApi?.applyTransaction({ add: [newRow] });
+        }
+        showSuccess('Temporal batch created successfully');
+      } catch (error) {
+        showError(`Error creating temporal batch: ${error.message}`);
+      }
+    },
+    [gridApi, showSuccess, showError]
+  );
+
+  /**
+   * Handles closing the split button menu.
+   */
+  const onNewBtnMenuClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  /**
    * Handles the "Delete" button click.
    * Confirms deletion with the user, then deletes the selected snapshots.
    */
-  const handleDelete = useCallback(async () => {
+  const onDeleteBtnClick = useCallback(async () => {
     const confirmed = await dialogs.confirm(`Delete the ${selectedRows.length} selected snapshots?`, {
       okText: 'Delete',
       title: 'Confirm Deletion',
@@ -239,11 +312,11 @@ export default function SnapshotsPage() {
    * Handles the "Refresh" button click.
    * Refreshes the grid with the latest data from the database.
    */
-  const handleRefresh = useCallback(() => {
+  const onRefreshBtnClick = useCallback(() => {
     snapshotFetchAll()
       .then((data) => {
         setRowData(data);
-        showSuccess('Snapshots refreshed successfully');
+        showInfo('Snapshots refreshed successfully');
         console.info('Snapshots refreshed successfully');
       })
       .catch((error) => {
@@ -290,6 +363,30 @@ export default function SnapshotsPage() {
     [showSuccess, showError, tqMap]
   );
 
+  /**
+   * Handles the "Make Snapshot Serially" button click.
+   * Calls the take-serial endpoint to run the selected snapshots in succession.
+   */
+  const onMakeSnapshotSerialClick = useCallback(async () => {
+    try {
+      const response = await fetch('/api/infra/snapshot/take-serial', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ snapshotIds: selectedRows }),
+      });
+      const data = await response.json();
+      if (data.status === 'success') {
+        showSuccess('Snapshots queued successfully');
+      } else {
+        showError(`Failed to queue snapshots: ${data.message}`);
+      }
+    } catch (error) {
+      showError(`Error queueing snapshots: ${error.message}`);
+    }
+  }, [selectedRows, showSuccess, showError]);
+
   return (
     <div className="flex flex-col h-full">
       <title>Snapshots - Diff2Rule</title>
@@ -297,13 +394,52 @@ export default function SnapshotsPage() {
       <h2 className="text-md">Capture current data source state</h2>
 
       <Stack direction="row" spacing={1} justifyContent="flex-end" marginBottom={1}>
-        <Button variant="contained" color="primary" onClick={handleNew} size="small">
-          New
+        <ButtonGroup variant="contained" color="primary" size="small" aria-label="split button">
+          <Button onClick={onNewBtnClick}>New</Button>
+          <Button
+            size="small"
+            aria-controls={isNewBtnMenuOpen ? 'split-button-menu' : undefined}
+            aria-expanded={isNewBtnMenuOpen ? 'true' : undefined}
+            aria-haspopup="menu"
+            onClick={(event) => setAnchorEl(event.currentTarget)}
+          >
+            <ArrowDropDownIcon />
+          </Button>
+        </ButtonGroup>
+        <Button
+          variant="contained"
+          color="warning"
+          onClick={onMakeSnapshotSerialClick}
+          size="small"
+          disabled={selectedRows.length < 2}
+          title="Make selected snapshots serially"
+        >
+          <PlayArrowIcon className="mr-1 -ml-0.5" />
+          Serial
         </Button>
-        <Button variant="contained" color="error" onClick={handleDelete} size="small" disabled={!isDeleteEnabled}>
+        <Menu
+          id="split-button-menu"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={isNewBtnMenuOpen}
+          onClose={onNewBtnMenuClose}
+          MenuListProps={{
+            'aria-labelledby': 'split-button',
+          }}
+        >
+          <MenuItem onClick={onTemporalBatchBtnClick}>Temporal Batch</MenuItem>
+        </Menu>
+        <Button variant="contained" color="error" onClick={onDeleteBtnClick} size="small" disabled={!isDeleteEnabled}>
           Delete
         </Button>
-        <IconButton color="primary" onClick={handleRefresh} size="small" title="Refresh">
+        <IconButton color="primary" onClick={onRefreshBtnClick} size="small" title="Refresh">
           <RefreshIcon />
         </IconButton>
       </Stack>
@@ -327,6 +463,12 @@ export default function SnapshotsPage() {
           onCellValueChanged={onCellValueChanged}
         />
       </div>
+      <CreateTemporalBatchDialog
+        open={isTemporalBatchDialogOpen}
+        onClose={handleTemporalBatchDialogClose}
+        onCreate={handleCreateTemporalBatch}
+        tqMap={tqMap}
+      />
     </div>
   );
 }

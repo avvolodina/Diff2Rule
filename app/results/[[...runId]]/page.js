@@ -19,7 +19,7 @@ import { formatDateIso } from '@modules/utils';
 const ResultsPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { showSuccess, showWarning, showError } = useSnackbar();
+  const { showSuccess, showWarning, showError, showInfo } = useSnackbar();
   const dialogs = useDialogs();
   const gridRef = useRef(null);
   const gridApi = gridRef?.current?.api;
@@ -134,7 +134,7 @@ const ResultsPage = () => {
     runFetchAllResults()
       .then((data) => {
         setRowData(data);
-        showSuccess('Run results refreshed successfully');
+        showInfo('Run results refreshed successfully');
         console.info('Run results refreshed successfully');
       })
       .catch((error) => {

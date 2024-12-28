@@ -18,7 +18,7 @@ import LinebreaksToBrCellRenderer from '@components/LinebreaksToBrCellRenderer';
  */
 const RuleSetsPage = () => {
   const router = useRouter();
-  const { showSuccess, showWarning, showError } = useSnackbar();
+  const { showSuccess, showWarning, showError, showInfo } = useSnackbar();
   const dialogs = useDialogs();
   const gridRef = useRef(null);
   const gridApi = gridRef?.current?.api;
@@ -270,7 +270,7 @@ const RuleSetsPage = () => {
     ruleSetFetchAll()
       .then((data) => {
         setRowData(data);
-        showSuccess('Rule sets refreshed successfully');
+        showInfo('Rule sets refreshed successfully');
         console.info('Rule sets refreshed successfully');
       })
       .catch((error) => {

@@ -19,7 +19,7 @@ import FlareIcon from '@mui/icons-material/Flare';
  * Displays a grid of target queries and provides functionality to manage them.
  */
 export default function TargetQueriesPage() {
-  const { showSuccess, showWarning, showError } = useSnackbar();
+  const { showSuccess, showWarning, showError, showInfo } = useSnackbar();
   const dialogs = useDialogs();
   const gridRef = useRef(null);
   const gridApi = gridRef?.current?.api;
@@ -71,7 +71,7 @@ export default function TargetQueriesPage() {
           <IconButton
             title="Log query DDL"
             className="rounded bg-green-500 hover:bg-green-700 p-0.5"
-            onClick={() => onLogQueryDdlClick(params.data.id)}
+            onClick={() => onLogQueryDdlBtnClick(params.data.id)}
           >
             <GrainIcon className="text-white text-sm" />
           </IconButton>
@@ -79,7 +79,7 @@ export default function TargetQueriesPage() {
             title="Create snapshot table"
             className="rounded bg-blue-500 hover:bg-blue-700 p-0.5 ml-2"
             onClick={() => {
-              onCreateSnapshotTableClick(params.data.id);
+              onCreateSnapshotTableBtnClick(params.data.id);
             }}
           >
             <FlareIcon className="text-white text-sm" />
@@ -175,11 +175,11 @@ export default function TargetQueriesPage() {
    * Handles the "Refresh" button click.
    * Refreshes the grid with the latest data from the database.
    */
-  const handleRefresh = useCallback(() => {
+  const onRefreshBtnClick = useCallback(() => {
     targetQueryFetchAll()
       .then((data) => {
         setRowData(data);
-        showSuccess('Target queries refreshed successfully');
+        showInfo('Target queries refreshed successfully');
         console.info('Target queries refreshed successfully');
       })
       .catch((error) => {
@@ -204,7 +204,7 @@ export default function TargetQueriesPage() {
    * Logs the DDL of the target query with the given ID.
    * @param {number} tqId - The ID of the target query.
    */
-  const onLogQueryDdlClick = useCallback(
+  const onLogQueryDdlBtnClick = useCallback(
     async (tqId) => {
       try {
         const response = await fetch(`/api/infra/tq-ddl/log?tqId=${tqId}`);
@@ -227,7 +227,7 @@ export default function TargetQueriesPage() {
    * Creates a snapshot table for the target query with the given ID.
    * @param {number} tqId - The ID of the target query.
    */
-  const onCreateSnapshotTableClick = useCallback(
+  const onCreateSnapshotTableBtnClick = useCallback(
     async (tqId) => {
       try {
         const response = await fetch(`/api/infra/snapshot/create-table?tqId=${tqId}`);
@@ -272,7 +272,7 @@ export default function TargetQueriesPage() {
         <Button variant="contained" color="error" onClick={handleDelete} size="small" disabled={!isDeleteEnabled}>
           Delete
         </Button>
-        <IconButton color="primary" onClick={handleRefresh} size="small" title="Refresh">
+        <IconButton color="primary" onClick={onRefreshBtnClick} size="small" title="Refresh">
           <RefreshIcon />
         </IconButton>
       </Stack>

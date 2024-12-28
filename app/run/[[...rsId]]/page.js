@@ -46,7 +46,7 @@ const RunPage = ({ params }) => {
   const [runNotes, setRunNotes] = useState('');
   const [paramValues, setParamValues] = useState({});
   const [rowData, setRowData] = useState([]);
-  const { showSuccess, showError } = useSnackbar();
+  const { showSuccess, showError, showInfo } = useSnackbar();
 
   /**
    * Defines the columns for the AgGrid table.
@@ -228,6 +228,7 @@ const RunPage = ({ params }) => {
    */
   const onRefreshBtnClick = useCallback(async () => {
     fetchRuns();
+    showInfo('Runs refreshed successfully');
   }, []);
 
   /**

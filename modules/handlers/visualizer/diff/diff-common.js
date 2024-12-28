@@ -68,6 +68,8 @@ export function renderSnapshotInfoAndStats(props) {
               <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-4">
                 <div className="font-bold text-right">Snapshot ID:</div>
                 <div>{snapshot_info.ssIdOld.ss_id}</div>
+                <div className="font-bold text-right">T Argument:</div>
+                <div>{snapshot_info.ssIdOld.ss_t_arg}</div>
                 <div className="font-bold text-right">Notes:</div>
                 <div>{snapshot_info.ssIdOld.ss_notes}</div>
                 <div className="font-bold text-right">Completed at:</div>
@@ -93,6 +95,8 @@ export function renderSnapshotInfoAndStats(props) {
               <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-4">
                 <div className="font-bold text-right">ID:</div>
                 <div>{snapshot_info.ssIdNew.ss_id}</div>
+                <div className="font-bold text-right">T Argument:</div>
+                <div>{snapshot_info.ssIdNew.ss_t_arg}</div>
                 <div className="font-bold text-right">Notes:</div>
                 <div>{snapshot_info.ssIdNew.ss_notes}</div>
                 <div className="font-bold text-right">Completed at:</div>

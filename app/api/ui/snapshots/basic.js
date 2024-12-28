@@ -61,6 +61,7 @@ export async function snapshotFetchAllSelect() {
  * @param {string} values.label - The label of the snapshot.
  * @param {number} values.tq_id - The target query id of the snapshot.
  * @param {string} values.notes - The notes of the snapshot.
+ * @param {string} values.t_arg - The t_arg of the snapshot.
  * @param {string} values.status - The status of the snapshot.
  * @returns {Promise<number>} A promise that resolves to the id of the new
  * snapshot.
@@ -74,11 +75,13 @@ export async function snapshotCreate(values) {
         label,
         tq_id,
         notes,
+        t_arg,
         status
       ) VALUES (
         $[label],
         $[tq_id],
         $[notes],
+        $[t_arg],
         $[status]
       )
       RETURNING id
@@ -158,6 +161,7 @@ export async function getSnapshotInfo(snapshotId) {
         ss.id AS ss_id,
         ss.label AS ss_label,
         ss.notes AS ss_notes,
+        ss.t_arg AS ss_t_arg,
         ss.complete_ts AS ss_complete_ts,
         tq.id AS tq_id,
         tq.name AS tq_name,

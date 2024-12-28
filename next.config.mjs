@@ -1,6 +1,9 @@
 import path from 'path';
 import { merge } from 'lodash-es';
 import { createTmpDirRoot } from './modules/utils-server.js';
+import packageJson from './package.json' with { type: 'json' };
+
+console.log(`Diff2Rule version: ${packageJson.xversion}`);
 
 // Ensure the Temp directory root exists
 createTmpDirRoot();

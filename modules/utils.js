@@ -31,6 +31,18 @@ export function formatStringDateIso(dateString) {
 }
 
 /**
+ * Formats a date as ISO string (YYYY-MM-DD).
+ * If the date is falsy, returns an empty string.
+ * @param {Date} date - The date to format.
+ * @returns {string} The formatted date string or an empty string.
+ */
+export function formatDateIsoShort(date) {
+  if (!date) return '';
+
+  return DateTime.fromJSDate(date).toFormat('yyyy-MM-dd');
+}
+
+/**
  * Regular expression to match the IDO date format (YYYY-MM-DD HH:mm:ss).
  */
 export const rxDateFormatIso = /\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/;
